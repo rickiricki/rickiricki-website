@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rickiricki — Brands. Products. Events.</title>
+    
+<!-- Inline SVG Favicon (Transparent Background with Bold Orange R) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50%' y='52%' dominant-baseline='central' text-anchor='middle' fill='%23FF5722' font-family='sans-serif' font-weight='900' font-size='92'>R</text></svg>">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#FF5722',
+                            dark: '#111111',
+                            lightBg: '#FAFAFA',
+                            cardBg: '#EEEEEE',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        serif: ['Playfair Display', 'Georgia', 'serif'],
+                        handwriting: ['Caveat', 'cursive'],
+                        sauce: ['Lacquer', 'cursive'],
+                        graffiti: ['Sedgwick Ave Display', 'cursive'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800;900&family=Lacquer&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Sedgwick+Ave+Display&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FAFAFA;
+            color: #111111;
+            overflow-x: hidden;
+        }
+
+        /* Graffiti street tag styling */
+        .graffiti-tag {
+            font-family: 'Sedgwick Ave Display', cursive;
+            text-shadow: 
+                2px 2px 0px #111111,
+                -1px -1px 0px #111111,
+                0 0 16px rgba(255, 87, 34, 0.45);
+            letter-spacing: 0.04em;
+            display: inline-block;
+            transform: rotate(-2.5deg);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .graffiti-tag:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        /* 1. KINETIC TYPOGRAPHY PHYSICS */
+        .kinetic-char {
+            display: inline-block;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
+            cursor: default;
+        }
+        .kinetic-char:hover {
+            transform: translateY(-8px) scale(1.18) rotate(4deg);
+        }
+
+        /* 2. DUAL-SPEED PARALLAX MARQUEE */
+        @keyframes marquee-left {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes marquee-right {
+            0% { transform: translateX(-50%); }
+            100% { transform: translateX(0%); }
+        }
+
+        .animate-marquee-slow {
+            display: flex;
+            width: max-content;
+            animation: marquee-left 38s linear infinite;
+        }
+        .animate-marquee-reverse {
+            display: flex;
+            width: max-content;
+            animation: marquee-right 46s linear infinite;
+        }
+        .animate-marquee-slow:hover, .animate-marquee-reverse:hover {
+            animation-play-state: paused;
+        }
+
+        .brand-logo-img {
+            max-height: 28px;
+            width: auto;
+            max-width: 120px;
+            object-fit: contain;
+            filter: grayscale(100%);
+            transition: filter 0.3s ease, transform 0.3s ease;
+        }
+        .brand-card:hover .brand-logo-img {
+            filter: grayscale(0%);
+            transform: scale(1.08);
+        }
+
+        /* 3. 3D CARD TILT & SPOTLIGHT EFFECT */
+        .tilt-card {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out, box-shadow 0.25s ease-out, border-color 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .spotlight-glow {
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 87, 34, 0.12), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+        }
+        .tilt-card:hover .spotlight-glow {
+            opacity: 1;
+        }
+
+        /* 4. SCROLL REVEAL (FRAMER MOTION STYLE) */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            filter: blur(8px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: transform, opacity, filter;
+        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
+        }
+
+        /* 5. ANIMATED STRIKETHROUGH LINE */
+        .strikethrough-path {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        .is-visible .strikethrough-path {
+            stroke-dashoffset: 0;
+        }
+
+        /* Hand-written word pop */
+        .wall-pop {
+            opacity: 0;
+            transform: scale(0.6) rotate(-12deg);
+            transition: opacity 0.5s ease 0.4s, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s;
+        }
+        .is-visible .wall-pop {
+            opacity: 1;
+            transform: scale(1) rotate(-6deg);
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased flex flex-col justify-between selection:bg-brand-orange selection:text-white pt-12 md:pt-20">
+
+    <main class="max-w-6xl mx-auto px-6 py-6 md:py-12 w-full space-y-20 md:space-y-28">
+        
+        <!-- 1. HERO SECTION -->
+        <header class="space-y-4 max-w-3xl mx-auto text-center reveal-on-scroll">
+            <h1 class="text-6xl sm:text-8xl font-black font-serif tracking-tight select-none py-2">
+                <span class="kinetic-char text-black">r</span><span class="kinetic-char text-brand-orange">i</span><span class="kinetic-char text-black">c</span><span class="kinetic-char text-black">k</span><span class="kinetic-char text-brand-orange">i</span><span class="kinetic-char text-black">r</span><span class="kinetic-char text-brand-orange">i</span><span class="kinetic-char text-black">c</span><span class="kinetic-char text-black">k</span><span class="kinetic-char text-brand-orange">i</span>
+            </h1>
+            <p class="text-xl sm:text-2xl font-semibold text-gray-800 tracking-tight">
+                Brands<span class="text-brand-orange font-bold">.</span> Products<span class="text-brand-orange font-bold">.</span> Events<span class="text-brand-orange font-bold">.</span>
+            </p>
+        </header>
+
+        <!-- 2. LOGO TICKER SECTION -->
+        <section class="space-y-6 text-center reveal-on-scroll">
+            <h2 class="text-sm font-semibold tracking-wider text-gray-500 uppercase">
+                Picked by founders
+            </h2>
+
+            <div class="relative w-full overflow-hidden py-2 space-y-3 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+                <!-- Row 1: Leftward Slow Flow (7 unique items duplicated) -->
+                <div class="animate-marquee-slow flex items-center gap-4 sm:gap-6">
+                    <!-- First Set -->
+                    <a href="https://www.aeropay.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/aeropay.png" alt="Aeropay" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.altoira.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/alto.png" alt="Alto" class="brand-logo-img" />
+                    </a>
+                    <a href="https://athleticbrewing.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/Athletic-brewing.png" alt="Athletic Brewing" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.baboontothemoon.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/baboon.png" alt="Baboon" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.hirechore.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/chore.png" alt="Chore" class="brand-logo-img" />
+                    </a>
+                    <a href="https://earthfuneral.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/earth-funeral.png" alt="Earth Funeral" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.manscaped.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/manscaped.png" alt="Manscaped" class="brand-logo-img" />
+                    </a>
+
+                    <!-- Duplicate Set for Seamless Loop -->
+                    <a href="https://www.aeropay.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/aeropay.png" alt="Aeropay" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.altoira.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/alto.png" alt="Alto" class="brand-logo-img" />
+                    </a>
+                    <a href="https://athleticbrewing.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/Athletic-brewing.png" alt="Athletic Brewing" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.baboontothemoon.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/baboon.png" alt="Baboon" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.hirechore.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/chore.png" alt="Chore" class="brand-logo-img" />
+                    </a>
+                    <a href="https://earthfuneral.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/earth-funeral.png" alt="Earth Funeral" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.manscaped.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/manscaped.png" alt="Manscaped" class="brand-logo-img" />
+                    </a>
+                </div>
+
+                <!-- Row 2: Rightward Reverse Parallax Flow (7 unique items duplicated) -->
+                <div class="animate-marquee-reverse flex items-center gap-4 sm:gap-6 opacity-90 scale-[0.98]">
+                    <!-- First Set -->
+                    <a href="https://www.drinknooma.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/nooma.png" alt="Nooma" class="brand-logo-img" />
+                    </a>
+                    <a href="https://plantathletic.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/plant-athletic.png" alt="Plant Athletic" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.popcorn.space/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/popcorn.png" alt="Popcorn" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.ritualzeroproof.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/ritual-zero-proof.png" alt="Ritual Zero Proof" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.specialized.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/specialized.png" alt="Specialized" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.storyarb.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/storyarb.png" alt="Storyarb" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.yoop.app/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/yoop.png" alt="Yoop" class="brand-logo-img" />
+                    </a>
+
+                    <!-- Duplicate Set for Seamless Loop -->
+                    <a href="https://www.drinknooma.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/nooma.png" alt="Nooma" class="brand-logo-img" />
+                    </a>
+                    <a href="https://plantathletic.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/plant-athletic.png" alt="Plant Athletic" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.popcorn.space/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/popcorn.png" alt="Popcorn" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.ritualzeroproof.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/ritual-zero-proof.png" alt="Ritual Zero Proof" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.specialized.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/specialized.png" alt="Specialized" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.storyarb.com/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/storyarb.png" alt="Storyarb" class="brand-logo-img" />
+                    </a>
+                    <a href="https://www.yoop.app/" target="_blank" rel="noopener noreferrer" class="brand-card bg-brand-cardBg hover:bg-gray-200/90 transition-all rounded-xl px-6 py-4 flex items-center justify-center min-h-[72px] w-44 shrink-0 border border-black/5">
+                        <img src="assets/logos/yoop.png" alt="Yoop" class="brand-logo-img" />
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. THE SAUCE SECTION -->
+        <section class="space-y-10 pt-6 border-t border-gray-200/80 reveal-on-scroll">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <h1 class="text-6xl sm:text-8xl font-sauce tracking-tight select-none py-2 text-brand-orange">
+                    The Sauce
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-700 leading-relaxed font-medium">
+                    You want a million-dollar webinar, an SXSW panel, or the #1 spot on Twitter.<br>Or maybe something more reasonable, like strong press, a better CAC-to-LTV ratio, and a higher app activation rate. It’s all the same process:
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Intake -->
+                <div class="tilt-card bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div class="spotlight-glow"></div>
+                    <div class="space-y-3 relative z-10">
+                        <h3 class="text-2xl font-bold text-gray-900">Intake</h3>
+                        <p class="text-gray-600 text-base leading-relaxed font-medium">
+                            Tell us what you want. Be a lil delusional.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Plan -->
+                <div class="tilt-card bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div class="spotlight-glow"></div>
+                    <div class="space-y-3 relative z-10">
+                        <h3 class="text-2xl font-bold text-gray-900">Plan</h3>
+                        <p class="text-gray-600 text-base leading-relaxed font-medium">
+                            We break it down into practical, achievable steps.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Deliver -->
+                <div class="tilt-card bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div class="spotlight-glow"></div>
+                    <div class="space-y-3 relative z-10">
+                        <h3 class="text-2xl font-bold text-gray-900">Deliver</h3>
+                        <p class="text-gray-600 text-base leading-relaxed font-medium">
+                            Then make it happen ourselves or bring in the right people.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. TESTIMONIALS SECTION -->
+        <section class="space-y-12 pt-6 border-t border-gray-200/80 reveal-on-scroll">
+            <div class="text-center max-w-xl mx-auto">
+                <div class="inline-flex items-center justify-center gap-2">
+                    <span class="text-3xl sm:text-4xl font-extrabold tracking-tight text-black select-none">
+                        Trust
+                    </span>
+                    <div class="relative inline-block">
+                        <span class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-400 select-none">
+                            Falls
+                        </span>
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none" overflow="visible">
+                            <path class="strikethrough-path" d="M -2,22 Q 40,14 85,20" fill="none" stroke="#FF5722" stroke-width="5" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <span class="wall-pop font-handwriting text-4xl sm:text-5xl font-bold text-brand-orange translate-y-1 select-none">
+                        Wall
+                    </span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <!-- HERO TESTIMONIAL (Michael Kushner - Baboon) -->
+                <div class="tilt-card md:col-span-2 bg-brand-orange/10 border-2 border-brand-orange/30 text-gray-900 p-8 sm:p-10 rounded-3xl shadow-md space-y-6 relative overflow-hidden group">
+                    <div class="spotlight-glow"></div>
+                    <div class="absolute -right-6 -bottom-6 text-brand-orange/10 font-serif text-9xl font-black select-none pointer-events-none">“</div>
+                    <p class="font-serif text-2xl sm:text-3xl leading-relaxed text-gray-900 relative z-10">
+                        "One part Hunter S. Thompson, one part Dennis Rodman, with a splash of Michelle Obama. Ricki brings the energy and intelligence needed in any organization. Or rather, the organizations that have a point of view."
+                    </p>
+                    <div class="flex items-center gap-4 pt-4 border-t border-brand-orange/20 relative z-10">
+                        <img src="assets/headshots/michael-kushner.jpeg" alt="Michael Kushner" class="w-14 h-14 rounded-full bg-white border-2 border-brand-orange object-cover shrink-0" />
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-900">Michael Kushner</h4>
+                            <p class="text-xs text-brand-orange font-bold tracking-wider uppercase">Baboon <span class="text-gray-600 font-normal">| Founder</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bill Shufelt - Athletic Brewing -->
+                <div class="tilt-card bg-white p-7 rounded-2xl border border-gray-200 shadow-sm space-y-4 flex flex-col justify-between h-full">
+                    <div class="spotlight-glow"></div>
+                    <p class="text-gray-700 leading-relaxed text-sm relative z-10">
+                        "Having worked with Ricki for multiple years, as well as having continuous exciting dialogues about the wellness movement, I've always enjoyed his perspectives, enthusiasm, creativity, and positivity. Nobody is more fun to discuss and gameplan a project with."
+                    </p>
+                    <div class="flex items-center gap-3.5 pt-4 border-t border-gray-100 relative z-10">
+                        <img src="assets/headshots/bill-shufelt.jpeg" alt="Bill Shufelt" class="w-11 h-11 rounded-full bg-gray-100 border border-gray-200 object-cover shrink-0" />
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900">Bill Shufelt</h4>
+                            <p class="text-xs text-gray-500 font-medium">Athletic Brewing Co. <span class="text-gray-400">| Founder</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Neel Popat - Donut, Popcorn -->
+                <div class="tilt-card bg-white p-7 rounded-2xl border border-gray-200 shadow-sm space-y-4 flex flex-col justify-between h-full">
+                    <div class="spotlight-glow"></div>
+                    <p class="text-gray-700 leading-relaxed text-sm relative z-10">
+                        "Ricki impressed us with his excellent writing skills from very early on. He's proactive, full of creative ideas, and has great integrity. I'm sure he would be an asset for any employer."
+                    </p>
+                    <div class="flex items-center gap-3.5 pt-4 border-t border-gray-100 relative z-10">
+                        <img src="assets/headshots/neel-popat.jpeg" alt="Neel Popat" class="w-11 h-11 rounded-full bg-gray-100 border border-gray-200 object-cover shrink-0" />
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900">Neel Popat</h4>
+                            <p class="text-xs text-gray-500 font-medium">Donut, Popcorn <span class="text-gray-400">| Founder</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jarred Smith - Nooma -->
+                <div class="tilt-card bg-white p-7 rounded-2xl border border-gray-200 shadow-sm space-y-4 flex flex-col justify-between h-full">
+                    <div class="spotlight-glow"></div>
+                    <p class="text-gray-700 leading-relaxed text-sm relative z-10">
+                        "Ricki is an absolute creative force. He has the rare ability to be at the forefront of so many significant trends and pair that with the ability to create truly original, engaging content that you simply look forward to watching. It's a powerful combination."
+                    </p>
+                    <div class="flex items-center gap-3.5 pt-4 border-t border-gray-100 relative z-10">
+                        <img src="assets/headshots/jarred-smith.jpeg" alt="Jarred Smith" class="w-11 h-11 rounded-full bg-gray-100 border border-gray-200 object-cover shrink-0" />
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900">Jarred Smith</h4>
+                            <p class="text-xs text-gray-500 font-medium">Nooma <span class="text-gray-400">| Founder</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pat McAuley - Plant Athletic -->
+                <div class="tilt-card bg-white p-7 rounded-2xl border border-gray-200 shadow-sm space-y-4 flex flex-col justify-between h-full">
+                    <div class="spotlight-glow"></div>
+                    <p class="text-gray-700 leading-relaxed text-sm relative z-10">
+                        "Ricki's capacity for creativity is insane. He has this rare ability to match quantity with quality. Behind the scenes he is critical of ideas, which only allows the best ones to see the light of day. He can also get in touch with anyone. He has a charm to him."
+                    </p>
+                    <div class="flex items-center gap-3.5 pt-4 border-t border-gray-100 relative z-10">
+                        <img src="assets/headshots/pat-mcauley.jpeg" alt="Pat McAuley" class="w-11 h-11 rounded-full bg-gray-100 border border-gray-200 object-cover shrink-0" />
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900">Pat McAuley</h4>
+                            <p class="text-xs text-gray-500 font-medium">Plant Athletic <span class="text-gray-400">| CEO</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Richard Hoffman - Alto -->
+                <div class="tilt-card bg-white p-7 rounded-2xl border border-gray-200 shadow-sm space-y-4 flex flex-col justify-between h-full">
+                    <div class="spotlight-glow"></div>
+                    <p class="text-gray-700 leading-relaxed text-sm relative z-10">
+                        "Ricki is the most diligent, thoughtful, and professional consultant I've ever worked with, in years of doing so with hundreds of similar engagements. His creativity and forthright ideation is second to none, and he is as effective at advocating for new, provocative ideas as he is graceful when he's told no, that won't work right now. I cannot recommend working with him enough."
+                    </p>
+                    <div class="flex items-center gap-3.5 pt-4 border-t border-gray-100 relative z-10">
+                        <img src="assets/headshots/richard-hoffman.jpeg" alt="Richard Hoffman" class="w-11 h-11 rounded-full bg-gray-100 border border-gray-200 object-cover shrink-0" />
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900">Richard Hoffman</h4>
+                            <p class="text-xs text-gray-500 font-medium">Alto <span class="text-gray-400">| Head of Marketing</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nick Rudy - Aeropay -->
+                <div class="tilt-card bg-white p-7 rounded-2xl border border-gray-200 shadow-sm space-y-4 flex flex-col justify-between h-full">
+                    <div class="spotlight-glow"></div>
+                    <p class="text-gray-700 leading-relaxed text-sm relative z-10">
+                        "Ricki consistently delivers work that exceeds expectations, including the most detailed briefs. His lightning-fast turnaround and flawless first submissions eliminate the need for revisions. For anyone seeking top-tier results with quick turnaround times, I wholeheartedly recommend Ricki. He's a 10/10."
+                    </p>
+                    <div class="flex items-center gap-3.5 pt-4 border-t border-gray-100 relative z-10">
+                        <img src="assets/headshots/nick-rudy.jpeg" alt="Nick Rudy" class="w-11 h-11 rounded-full bg-gray-100 border border-gray-200 object-cover shrink-0" />
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900">Nick Rudy</h4>
+                            <p class="text-xs text-gray-500 font-medium">Aeropay <span class="text-gray-400">| Head of Content</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jessica Kulick - Storyarb -->
+                <div class="tilt-card bg-white p-7 rounded-2xl border border-gray-200 shadow-sm space-y-4 flex flex-col justify-between h-full">
+                    <div class="spotlight-glow"></div>
+                    <p class="text-gray-700 leading-relaxed text-sm relative z-10">
+                        "Ricki is smart, adaptable, and highly creative. I deeply appreciated his willingness to immerse himself in a client's world and work to truly understand what makes them tick. I enjoy his thoughtful approach, as well as his ability to both give and receive feedback."
+                    </p>
+                    <div class="flex items-center gap-3.5 pt-4 border-t border-gray-100 relative z-10">
+                        <img src="assets/headshots/jessica-kulick.jpeg" alt="Jessica Kulick" class="w-11 h-11 rounded-full bg-gray-100 border border-gray-200 object-cover shrink-0" />
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900">Jessica Kulick</h4>
+                            <p class="text-xs text-gray-500 font-medium">Storyarb <span class="text-gray-400">| Creative Director</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Andrew Flynn - Donut -->
+                <div class="tilt-card bg-white p-7 rounded-2xl border border-gray-200 shadow-sm space-y-4 flex flex-col justify-between h-full">
+                    <div class="spotlight-glow"></div>
+                    <p class="text-gray-700 leading-relaxed text-sm relative z-10">
+                        "While most people look at a problem head-on, Ricki turns it upside down, cuts it in half, and views it through polarized glasses. He simply sees the world differently—and has this rare, crazy ability to package those insights up and execute at lightning speed."
+                    </p>
+                    <div class="flex items-center gap-3.5 pt-4 border-t border-gray-100 relative z-10">
+                        <img src="assets/headshots/andrew-flynn.jpeg" alt="Andrew Flynn" class="w-11 h-11 rounded-full bg-gray-100 border border-gray-200 object-cover shrink-0" />
+                        <div>
+                            <h4 class="font-bold text-sm text-gray-900">Andrew Flynn</h4>
+                            <p class="text-xs text-gray-500 font-medium">Donut <span class="text-gray-400">| Head of Growth</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. CREATING TOGETHER SECTION -->
+        <section class="space-y-8 pt-6 border-t border-gray-200/80 reveal-on-scroll">
+            <div class="text-center max-w-xl mx-auto py-2">
+                <h2 class="text-4xl sm:text-6xl font-normal graffiti-tag text-brand-orange select-none">
+                    Creating Together
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Project -->
+                <div class="tilt-card bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div class="spotlight-glow"></div>
+                    <div class="space-y-4 relative z-10">
+                        <div class="space-y-1">
+                            <h3 class="text-2xl font-bold text-gray-900">Project</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            Built for one-and-done initiatives with a clear scope and finish line. Bring us a launch, campaign, event, or problem to solve, and we’ll take it from brief to done.
+                        </p>
+                    </div>
+                    <ul class="mt-8 space-y-2.5 text-sm font-medium text-gray-700 border-t border-gray-100 pt-6 relative z-10">
+                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-brand-orange"></span> Clear scope & timeline</li>
+                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-brand-orange"></span> Turnkey execution</li>
+                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-brand-orange"></span> Defined deliverable</li>
+                    </ul>
+                </div>
+
+                <!-- On-Demand -->
+                <div class="tilt-card bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div class="spotlight-glow"></div>
+                    <div class="space-y-4 relative z-10">
+                        <div class="space-y-1">
+                            <h3 class="text-2xl font-bold text-gray-900">On-Demand</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            We ramp into your business upfront and stay close enough to jump in fast when something important comes up. Think of us as an on-call extension of your team.
+                        </p>
+                    </div>
+                    <ul class="mt-8 space-y-2.5 text-sm font-medium text-gray-700 border-t border-gray-100 pt-6 relative z-10">
+                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-brand-orange"></span> Upfront business ramp</li>
+                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-brand-orange"></span> Lightweight ongoing connection</li>
+                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-brand-orange"></span> Fast priority turnaround</li>
+                    </ul>
+                </div>
+
+                <!-- Fractional -->
+                <div class="tilt-card bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                    <div class="spotlight-glow"></div>
+                    <div class="space-y-4 relative z-10">
+                        <div class="space-y-1">
+                            <h3 class="text-2xl font-bold text-gray-900">Fractional</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm leading-relaxed">
+                            We embed on a consistent schedule, whether that’s one day a week or three. We work alongside your team and scale our involvement as your needs change.
+                        </p>
+                    </div>
+                    <ul class="mt-8 space-y-2.5 text-sm font-medium text-gray-700 border-t border-gray-100 pt-6 relative z-10">
+                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-brand-orange"></span> Dedicated weekly capacity</li>
+                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-brand-orange"></span> Embedded team ownership</li>
+                        <li class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-brand-orange"></span> Flexible ongoing support</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-6xl mx-auto px-6 py-8 w-full border-t border-gray-200 text-xs text-gray-500 flex justify-between items-center">
+        <span>&copy; <script>document.write(new Date().getFullYear())</script> rickiricki</span>
+        <span class="text-gray-400">Brands. Products. Events.</span>
+    </footer>
+
+<!-- Floating "Get in Touch" Action Button -->
+    <a href="mailto:richardcrowleyiv@gmail.com?subject=Let's%20build%20something%20together&body=Hey%20Ricki%20-%20here's%20what%20I'm%20thinking..." 
+       class="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-brand-orange/15 hover:bg-brand-orange/25 text-black px-5 py-3 rounded-full shadow-lg backdrop-blur-sm border-2 border-brand-orange transition-all duration-300 hover:scale-105 active:scale-95">
+        <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-orange opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-orange"></span>
+        </span>
+        <span class="text-sm font-bold tracking-tight select-none">
+            Get in touch
+        </span>
+    </a>
+
+    <!-- INTERACTIVE ANIMATION SCRIPT -->
+    <script>
+        // Scroll Reveal Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+        // 3D Card Tilt & Cursor Spotlight Tracking
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = ((y - centerY) / centerY) * -6; // 6deg max tilt
+                const rotateY = ((x - centerX) / centerX) * 6;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(4px)`;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+            });
+        });
+    </script>
+</body>
+</html>
